@@ -38,7 +38,8 @@ export function AuthModal({ isOpen, onClose, isLogin, setIsLogin, onLoginSuccess
         localStorage.setItem("email", data.data.name);
         localStorage.setItem("role", data.data.role);
         alert("Login successful!");
-        onLoginSuccess({ name: data.data.name }); // Notify parent component of successful login
+        //onLoginSuccess({ name: data.data.name }); // Notify parent component of successful login
+        onClose(); // Close the modal after successful login
       } else {
         alert(data.message || "Login failed.");
       }

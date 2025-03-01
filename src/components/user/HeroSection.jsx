@@ -80,6 +80,19 @@ export function HeroSection({ onNextClick }) {
             />
           ))}
         </div>
+
+          {/* Available Cars */}
+        {/* {selectedCategory && pickup && dropoff && (
+          <div className="mt-8">
+            <AvailableCars category={selectedCategory} />
+          </div>
+        )} */}
+        {selectedCategory && (
+          <div className="mb-8">
+            <AvailableCars category={selectedCategory} />
+          </div>
+        )}
+
         {/* Location Selectors and Date/Time Inputs */}
         <div className="bg-white rounded-lg p-6 shadow-lg max-w-2xl">
           <div className="space-y-4">
@@ -135,12 +148,7 @@ export function HeroSection({ onNextClick }) {
             </button>
           </div>
         </div>
-        {/* Available Cars */}
-        {selectedCategory && pickup && dropoff && (
-          <div className="mt-8">
-            <AvailableCars category={selectedCategory} />
-          </div>
-        )}
+        
       </div>
     </div>
   );
