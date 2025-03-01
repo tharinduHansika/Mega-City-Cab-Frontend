@@ -1,14 +1,22 @@
 // src/pages/AdminDashboard.jsx
 import React from 'react';
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import Layout from "../components/admin/Layout";
+import DriversManager from "../components/admin/DriverManager";
+import VehicleManager from "../components/admin/VehicleManager";
+import BookingsManager from "../components/admin/BookingManager";
 
 const AdminDashboard = () => {
   return (
     <div className="p-8">
-      <h1 className="text-2xl font-bold mb-4">Admin Dashboard</h1>
-      <div className="bg-white p-6 rounded-lg shadow-md">
-        <p>Welcome to the Admin Dashboard!</p>
-        <p>Here you can manage users, categories, and other settings.</p>
-      </div>
+      <Layout>
+        <Routes>
+          <Route path="/" element={<DriversManager />} />
+          <Route path="/drivers" element={<DriversManager />} />
+          <Route path="/vehicles" element={<VehicleManager />} />
+          <Route path="/bookings" element={<BookingsManager />} />
+        </Routes>
+      </Layout>
     </div>
   );
 };

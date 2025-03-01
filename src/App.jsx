@@ -22,20 +22,22 @@ function App() {
   };
 
   
-  const categories = [
-    { id: "1", name: "Sedan", price: "25" },
-    { id: "2", name: "SUV", price: "35" },
-    { id: "3", name: "Luxury", price: "50" },
-  ];
+  // const categories = [
+  //   { id: "1", name: "Sedan", price: "25" },
+  //   { id: "2", name: "SUV", price: "35" },
+  //   { id: "3", name: "Luxury", price: "50" },
+  // ];
 
   return (
     <div className="w-screen bg-gray-100 items-start">
       {/* Header */}
       <Header />
+      
       <Routes>
           <Route path="/" element={<HeroSection onNextClick={handleHeroSectionNextClick} />} />
-          <Route path="/admin" element={<AdminDashboard/>} />
-        </Routes>
+          <Route path="/admin/*" element={<AdminDashboard/>} />
+      </Routes>
+      
       {/* <HeroSection onNextClick={handleHeroSectionNextClick} /> */}
       <AuthModal
         isOpen={isAuthModalOpen}
