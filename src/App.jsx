@@ -1,10 +1,12 @@
 import { useState } from 'react'
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
 import './App.css'
 import Header from './components/Header/Header'
 import { HeroSection } from './components/user/HeroSection'
 import { AuthModal } from './components/user/AuthModal'
+import AdminDashboard from './pages/AdminDashboard';
 
 function App() {
   const [selectedCategory, setSelectedCategory] = useState(null);
@@ -30,7 +32,11 @@ function App() {
     <div className="w-screen bg-gray-100 items-start">
       {/* Header */}
       <Header />
-      <HeroSection onNextClick={handleHeroSectionNextClick} />
+      <Routes>
+          <Route path="/" element={<HeroSection onNextClick={handleHeroSectionNextClick} />} />
+          <Route path="/admin" element={<AdminDashboard/>} />
+        </Routes>
+      {/* <HeroSection onNextClick={handleHeroSectionNextClick} /> */}
       <AuthModal
         isOpen={isAuthModalOpen}
         onClose={handleAuthModalClose}

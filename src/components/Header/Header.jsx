@@ -29,7 +29,7 @@ export default function Header() {
         <nav>
           <ul className="flex space-x-4 items-center">
             <li>
-              <a href="#" className="hover:underline">
+              <a href="/" className="hover:underline">
                 Home
               </a>
             </li>
@@ -41,6 +41,11 @@ export default function Header() {
             <li>
               <a href="#" className="hover:underline">
                 Contact
+              </a>
+            </li>
+            <li>
+              <a href="/admin" className="hover:underline">
+                Admin Dashboard
               </a>
             </li>
             <li>
