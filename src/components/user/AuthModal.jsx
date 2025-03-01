@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 
-export function AuthModal({ isOpen, onClose, isLogin, setIsLogin }) {
+export function AuthModal({ isOpen, onClose, isLogin, setIsLogin, onLoginSuccess }) {
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -9,42 +9,44 @@ export function AuthModal({ isOpen, onClose, isLogin, setIsLogin }) {
 
   if (!isOpen) return null;
 
-
   const login = async (event) => {
     event.preventDefault();
     const loginRequest = {
-        email: formData.email,
-        password: formData.password
+      email: formData.email,
+      password: formData.password,
     };
 
     try {
-        const response = await fetch("http://localhost:8080/mega_city_cab_war/user?action=login", {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Accept': 'application/json'
-            },
-            body: JSON.stringify(loginRequest),
-            credentials: 'include' // Ensure cookies/tokens are handled
-        });
-
-        const data = await response.json();
-
-        if (response.ok) {
-            console.log("Login successful:", data);
-            localStorage.setItem('token', data.data.jwt);
-            localStorage.setItem('email', data.data.name);
-            localStorage.setItem('role', data.data.role);
-            alert('Login successful!');
-        } else {
-            alert(data.message || 'Login failed.');
+      const response = await fetch(
+        "http://localhost:8080/mega_city_cab_war/user?action=login",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+          },
+          body: JSON.stringify(loginRequest),
+          credentials: "include", // Ensure cookies/tokens are handled
         }
-    } catch (error) {
-        console.error("Error during login:", error);
-        alert('Error connecting to the server.');
-    }
-};
+      );
 
+      const data = await response.json();
+
+      if (response.ok) {
+        console.log("Login successful:", data);
+        localStorage.setItem("token", data.data.jwt);
+        localStorage.setItem("email", data.data.name);
+        localStorage.setItem("role", data.data.role);
+        alert("Login successful!");
+        onLoginSuccess({ name: data.data.name }); // Notify parent component of successful login
+      } else {
+        alert(data.message || "Login failed.");
+      }
+    } catch (error) {
+      console.error("Error during login:", error);
+      alert("Error connecting to the server.");
+    }
+  };
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
@@ -71,7 +73,6 @@ export function AuthModal({ isOpen, onClose, isLogin, setIsLogin }) {
             type="email"
             placeholder="Email"
             className="w-full p-3 border rounded-lg"
-          
             value={formData.email}
             onChange={(e) =>
               setFormData({
