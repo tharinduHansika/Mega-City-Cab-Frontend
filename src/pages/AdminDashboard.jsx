@@ -8,7 +8,7 @@ import BookingsManager from "../components/admin/BookingManager";
 
 const AdminDashboard = () => {
   return (
-    <div className="p-8">
+    <div className="p-0">
       <Layout>
         <Routes>
           <Route path="/" element={<DriversManager />} />
