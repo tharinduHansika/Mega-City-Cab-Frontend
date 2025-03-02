@@ -21,27 +21,27 @@ const Layout = ({ children }) => {
         </div>
         <nav className="mt-8">
           <Link
-            to="/drivers"
+            to="/admin/drivers"
             className={`flex items-center px-4 py-3 text-gray-300 hover:bg-gray-800 ${
-              isActive("/drivers") ? "bg-gray-800" : ""
+              isActive("/admin/drivers") ? "bg-gray-800" : ""
             }`}
           >
             <Users className="w-5 h-5 mr-3" />
             Drivers
           </Link>
           <Link
-            to="/vehicles"
+            to="/admin/vehicles"
             className={`flex items-center px-4 py-3 text-gray-300 hover:bg-gray-800 ${
-              isActive("/vehicles") ? "bg-gray-800" : ""
+              isActive("/admin/vehicles") ? "bg-gray-800" : ""
             }`}
           >
             <Car className="w-5 h-5 mr-3" />
             Vehicles
           </Link>
           <Link
-            to="/bookings"
+            to="/admin/bookings"
             className={`flex items-center px-4 py-3 text-gray-300 hover:bg-gray-800 ${
-              isActive("/bookings") ? "bg-gray-800" : ""
+              isActive("/admin/bookings") ? "bg-gray-800" : ""
             }`}
           >
             <Calendar className="w-5 h-5 mr-3" />

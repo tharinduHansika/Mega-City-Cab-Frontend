@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import Table from "../../components/admin/Table";
 import { Plus } from "lucide-react";
 
-const VehicleManager = () => {
+const VehiclesManager = () => {
   const [vehicles] = useState([
     {
       id: 1,
@@ -57,4 +57,4 @@ const VehicleManager = () => {
   );
 };
 
-export default VehicleManager;
+export default VehiclesManager;

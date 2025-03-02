@@ -1,6 +1,6 @@
 // src/pages/AdminDashboard.jsx
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
 import Layout from "../components/admin/Layout";
 import DriversManager from "../components/admin/DriverManager";
 import VehicleManager from "../components/admin/VehicleManager";
