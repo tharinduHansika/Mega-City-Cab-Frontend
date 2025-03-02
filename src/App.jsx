@@ -4,6 +4,7 @@ import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
 import './App.css'
 import Header from './components/Header/Header'
+import Footer from './components/Footer/Footer'
 import { HeroSection } from './components/user/HeroSection'
 import { AuthModal } from './components/user/AuthModal'
 import AdminDashboard from './pages/AdminDashboard';
@@ -45,6 +46,8 @@ function App() {
         isLogin={isLogin}
         setIsLogin={setIsLogin}
       />
+
+      <Footer />
     </div>
   );
 }

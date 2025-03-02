@@ -23,7 +23,7 @@ export default function Header() {
   };
 
   return (
-    <header className="w-full bg-yellow-500 text-black p-4 shadow-lg">
+    <header className="w-full bg-yellow-500 text-gray-900 p-4 shadow-lg">
       <div className="container mx-auto flex justify-between items-center">
         <h1 className="text-xl font-bold">Mega City Cab</h1>
         <nav>
