@@ -63,7 +63,7 @@ export default function Header() {
               ) : (
                 <button
                   onClick={() => setShowAuthModal(true)}
-                  className="bg-white hover:bg-gray-300 text-black font-bold py-1 px-2 rounded"
+                  className="bg-gray-900 hover:bg-gray-700 text-yellow-500 font-bold py-2 px-4 rounded"
                 >
                   Login
                 </button>

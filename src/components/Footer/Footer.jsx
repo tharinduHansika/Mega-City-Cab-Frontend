@@ -14,7 +14,7 @@ export default function Header() {
     <footer className="bg-yellow-500 text-gray-900 py-12 w-full">
       <div className="container mx-auto px-4 grid grid-cols-1 md:grid-cols-4 gap-8">
         <div>
-          <h3 className="text-xl font-bold mb-4">DriveEase</h3>
+          <h3 className="text-xl font-bold mb-4">Mega City Cab</h3>
           <p className="text-gray-900">
             Making car rental simple and accessible for everyone since 2010.
           </p>
