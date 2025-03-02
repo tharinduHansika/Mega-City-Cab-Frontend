@@ -1,6 +1,7 @@
 import React from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Users, Car, Calendar, LogOut } from "lucide-react";
+import { Users, Car, Calendar, LogOut, User } from "lucide-react";
+
 
 const Layout = ({ children }) => {
   const location = useLocation();
@@ -46,6 +47,15 @@ const Layout = ({ children }) => {
           >
             <Calendar className="w-5 h-5 mr-3" />
             Bookings
+          </Link>
+          <Link
+            to="/admin/users"
+            className={`flex items-center px-4 py-3 text-gray-300 hover:bg-gray-800 ${
+              isActive("/admin/users") ? "bg-gray-800" : ""
+            }`}
+          >
+            <User className="w-5 h-5 mr-3" />
+            Users
           </Link>
         </nav>
         <div className="absolute bottom-0 w-64 p-4">

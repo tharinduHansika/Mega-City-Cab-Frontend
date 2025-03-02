@@ -23,9 +23,9 @@ export default function Header() {
   };
 
   return (
-    <header className="w-full bg-blue-600 text-white p-4 shadow-lg">
+    <header className="w-full bg-yellow-500 text-black p-4 shadow-lg">
       <div className="container mx-auto flex justify-between items-center">
-        <h1 className="text-xl font-bold">My React App</h1>
+        <h1 className="text-xl font-bold">Mega City Cab</h1>
         <nav>
           <ul className="flex space-x-4 items-center">
             <li>
@@ -63,7 +63,7 @@ export default function Header() {
               ) : (
                 <button
                   onClick={() => setShowAuthModal(true)}
-                  className="bg-green-500 hover:bg-green-700 text-white font-bold py-1 px-2 rounded"
+                  className="bg-white hover:bg-gray-300 text-black font-bold py-1 px-2 rounded"
                 >
                   Login
                 </button>
