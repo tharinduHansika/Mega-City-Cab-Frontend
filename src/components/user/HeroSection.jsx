@@ -3,6 +3,7 @@ import { MapPin } from "lucide-react";
 import { CarCategory } from "./CarCategory";
 import { LocationSelector } from "./LocationSelector";
 import { AvailableCars } from "./AvailableCars";
+import { MapComponent } from "./MapComponent";
 
 export function HeroSection({ onNextClick }) {
   const [selectedCategory, setSelectedCategory] = useState("");
@@ -154,6 +155,8 @@ export function HeroSection({ onNextClick }) {
             
           </div>
         </div>
+
+        <MapComponent/>
 
         {selectedCategory && (
           <div className="mt-8">

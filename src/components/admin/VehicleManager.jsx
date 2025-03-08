@@ -1,82 +1,85 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import axios from "axios";
 import Table from "../../components/admin/Table";
 import { Plus } from "lucide-react";
 
 const VehiclesManager = () => {
-  const [vehicles, setVehicles] = useState([
-    {
-      id: 1,
-      model: "Toyota Camry",
-      plate: "ABC123",
-      status: "Available",
-      year: "2020",
-    },
-    {
-      id: 2,
-      model: "Honda Civic",
-      plate: "XYZ789",
-      status: "In Use",
-      year: "2021",
-    },
-  ]);
-
+  const [vehicles, setVehicles] = useState([]);
   const [isAddVehicleModalOpen, setIsAddVehicleModalOpen] = useState(false);
   const [isEditVehicleModalOpen, setIsEditVehicleModalOpen] = useState(false);
   const [selectedVehicle, setSelectedVehicle] = useState(null);
   const [newVehicle, setNewVehicle] = useState({
-    model: "",
-    plate: "",
+    vehicleNumber: "",
+    vehicleType: "",
+    passengerCount: "",
+    pricePerKm: "",
+    vehicleBrand: "",
+    vehicleModel: "",
     status: "Available",
-    year: "",
   });
 
-  const columns = [
-    {
-      header: "Vehicle Number",
-      accessor: "vehicleNumber",
-    },
-    {
-      header: "Vehicle Type",
-      accessor: "vehicleType",
-    },
-    {
-      header: "Passenger Count",
-      accessor: "passengerCount",
-    },
-    {
-      header: "Price Per Km",
-      accessor: "pricePerKm",
-    },
-    {
-      header: "Vehicle Brand",
-      accessor: "vehicleBrand",
-    },
-    {
-      header: "Status",
-      accessor: "status",
-    },
-   {
-      header: "Vehicle Model",
-      accessor: "vehicleModel",
-    },
-  ];
+  const API_BASE_URL = "http://localhost:8080/mega_city_cab_war/"; // Replace with your backend URL
 
+  const getAuthHeaders = () => {
+    const token = localStorage.getItem("token"); // Assuming you store the JWT token in localStorage
+    return {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    };
+  };
+
+  const getAllVehicles = async () => {
+    console.log("Fetching vehicles...");
+    try {
+        const response = await axios.get(`${API_BASE_URL}/vehicle?action=all`, {
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${localStorage.getItem('token')}`,
+            },
+        });
+
+        // Axios automatically parses JSON, so use response.data
+        const responseData = response.data;
+
+        if (responseData.code === 200) {
+            console.log("Vehicles Data:", responseData.data); // Corrected logging
+            setVehicles(responseData.data);
+        } else {
+            console.error("Error fetching vehicles:", responseData.message);
+        }
+    } catch (error) {
+        console.error("Request failed:", error);
+    }
+};
+
+
+  useEffect(() => {
+    getAllVehicles();
+  }, []);
+
+  // Add a new vehicle
   const handleAddVehicle = () => {
     setIsAddVehicleModalOpen(true);
   };
 
+  // Close modal and reset form
   const handleCloseModal = () => {
     setIsAddVehicleModalOpen(false);
     setIsEditVehicleModalOpen(false);
     setSelectedVehicle(null);
     setNewVehicle({
-      model: "",
-      plate: "",
+      vehicleNumber: "",
+      vehicleType: "",
+      passengerCount: "",
+      pricePerKm: "",
+      vehicleBrand: "",
+      vehicleModel: "",
       status: "Available",
-      year: "",
     });
   };
 
+  // Handle input changes
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     if (selectedVehicle) {
@@ -92,35 +95,74 @@ const VehiclesManager = () => {
     }
   };
 
+  // Handle row click to edit a vehicle
   const handleRowClick = (vehicle) => {
     setSelectedVehicle(vehicle);
     setIsEditVehicleModalOpen(true);
   };
 
-  const handleUpdateVehicle = (e) => {
-    e.preventDefault();
-    const updatedVehicles = vehicles.map((vehicle) =>
-      vehicle.id === selectedVehicle.id ? selectedVehicle : vehicle
+  // Update a vehicle
+const handleUpdateVehicle = async (e) => {
+  e.preventDefault(); // Prevent the default form submission behavior
+
+  try {
+    console.log("selectedd vehicle id update :"+selectedVehicle.vehicleId);
+    // Send a PUT request to update the vehicle
+    const response = await axios.put(
+       
+      `${API_BASE_URL}vehicle`, // Endpoint for updating a vehicle
+      {
+        vehicleId: selectedVehicle.vehicleId, // Include the vehicle ID to identify the vehicle to update
+        ...selectedVehicle, // Spread the updated vehicle details
+      },
+      getAuthHeaders() // Include authentication headers
     );
-    setVehicles(updatedVehicles);
-    handleCloseModal();
+
+    // Check if the update was successful
+    if (response.data.code === 200) {
+      console.log("Vehicle updated successfully:", response.data);
+      getAllVehicles(); // Refresh the vehicle list
+      handleCloseModal(); // Close the modal
+    } else {
+      console.error("Error updating vehicle:", response.data.message);
+    }
+  } catch (error) {
+    console.error("Error updating vehicle:", error);
+  }
+};
+
+  // Delete a vehicle
+  const handleDeleteVehicle = async () => {
+    try {
+      await axios.delete(`${API_BASE_URL}/vehicle?vehicleId=${selectedVehicle.vehicleId}`, getAuthHeaders());
+      getAllVehicles(); // Refresh the list
+      handleCloseModal();
+    } catch (error) {
+      console.error("Error deleting vehicle:", error);
+    }
   };
 
-  const handleDeleteVehicle = () => {
-    const updatedVehicles = vehicles.filter((vehicle) => vehicle.id !== selectedVehicle.id);
-    setVehicles(updatedVehicles);
-    handleCloseModal();
-  };
-
-  const handleSubmit = (e) => {
+  // Submit a new vehicle
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    const newVehicleWithId = {
-      ...newVehicle,
-      id: vehicles.length + 1, // Generate a new ID
-    };
-    setVehicles([...vehicles, newVehicleWithId]);
-    handleCloseModal();
+    try {
+      await axios.post(`${API_BASE_URL}/vehicle`, newVehicle, getAuthHeaders());
+      getAllVehicles(); // Refresh the list
+      handleCloseModal();
+    } catch (error) {
+      console.error("Error adding vehicle:", error);
+    }
   };
+
+  const columns = [
+    { header: "Vehicle Number", accessor: "vehicleNumber" },
+    { header: "Vehicle Type", accessor: "vehicleType" },
+    { header: "Passenger Count", accessor: "passengerCount" },
+    { header: "Price Per Km", accessor: "pricePerKm" },
+    { header: "Vehicle Brand", accessor: "vehicleBrand" },
+    { header: "Status", accessor: "status" },
+    { header: "Vehicle Model", accessor: "vehicleModel" },
+  ];
 
   return (
     <div>
@@ -230,7 +272,6 @@ const VehiclesManager = () => {
           <div className="bg-white rounded-lg p-8 max-w-md w-full">
             <h2 className="text-2xl font-bold mb-6">Edit Vehicle</h2>
             <form className="space-y-4" onSubmit={handleUpdateVehicle}>
-              
               <input
                 type="text"
                 name="vehicleNumber"
