@@ -1,69 +1,61 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import axios from "axios";
 import Table from "../../components/admin/Table";
 import { Plus } from "lucide-react";
 
 const DriversManager = () => {
-  const [drivers, setDrivers] = useState([
-    {
-      id: 1,
-      name: "John Doe",
-      license: "ABC123",
-      status: "Active",
-      phone: "123-456-7890",
-    },
-    {
-      id: 2,
-      name: "Jane Smith",
-      license: "XYZ789",
-      status: "Inactive",
-      phone: "098-765-4321",
-    },
-  ]);
-
+  const [drivers, setDrivers] = useState([]);
   const [isAddDriverModalOpen, setIsAddDriverModalOpen] = useState(false);
   const [isEditDriverModalOpen, setIsEditDriverModalOpen] = useState(false);
   const [selectedDriver, setSelectedDriver] = useState(null);
   const [newDriver, setNewDriver] = useState({
     name: "",
-    license: "",
-    status: "Active",
-    phone: "",
+    age: "",
+    email: "",
+    licenseNumber: "",
+    nicNumber: "",
+    phoneNumber: "",
+    homeAddress: "",
+    status: "Available",
   });
 
-  const columns = [
-    {
-      header: "Name",
-      accessor: "name",
-    },
-    {
-      header: "Age",
-      accessor: "age",
-    },
-    {
-      header: "Email",
-      accessor: "email",
-    },
-    {
-      header: "License Number",
-      accessor: "licenseNumber",
-    },
-    {
-      header: "NIC Number",
-      accessor: "nicNumber",
-    },
-    {
-      header: "Phone Number",
-      accessor: "phoneNumber",
-    },
-    {
-      header: "Home Address",
-      accessor: "homeAddress",
-    },
-    {
-      header: "Status",
-      accessor: "status",
-    },
-  ];
+  const API_BASE_URL = "http://localhost:8080/mega_city_cab_war/"; // Replace with your backend URL
+
+  const getAuthHeaders = () => {
+    const token = localStorage.getItem("token"); // Assuming you store the JWT token in localStorage
+    return {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    };
+  };
+
+  const getAllDrivers = async () => {
+    console.log("Fetching drivers...");
+    try {
+      const response = await axios.get(`${API_BASE_URL}/driver?action=all`, {
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+        },
+      });
+
+      const responseData = response.data;
+
+      if (responseData.code === 200) {
+        console.log("Drivers Data:", responseData.data);
+        setDrivers(responseData.data);
+      } else {
+        console.error("Error fetching drivers:", responseData.message);
+      }
+    } catch (error) {
+      console.error("Request failed:", error);
+    }
+  };
+
+  useEffect(() => {
+    getAllDrivers();
+  }, []);
 
   const handleAddDriver = () => {
     setIsAddDriverModalOpen(true);
@@ -75,9 +67,13 @@ const DriversManager = () => {
     setSelectedDriver(null);
     setNewDriver({
       name: "",
-      license: "",
-      status: "Active",
-      phone: "",
+      age: "",
+      email: "",
+      licenseNumber: "",
+      nicNumber: "",
+      phoneNumber: "",
+      homeAddress: "",
+      status: "Available",
     });
   };
 
@@ -101,30 +97,62 @@ const DriversManager = () => {
     setIsEditDriverModalOpen(true);
   };
 
-  const handleUpdateDriver = (e) => {
+  const handleUpdateDriver = async (e) => {
     e.preventDefault();
-    const updatedDrivers = drivers.map((driver) =>
-      driver.id === selectedDriver.id ? selectedDriver : driver
-    );
-    setDrivers(updatedDrivers);
-    handleCloseModal();
+
+    try {
+      const response = await axios.put(
+        `${API_BASE_URL}driver`,
+        {
+          driverId: selectedDriver.driverId,
+          ...selectedDriver,
+        },
+        getAuthHeaders()
+      );
+
+      if (response.data.code === 200) {
+        console.log("Driver updated successfully:", response.data);
+        getAllDrivers();
+        handleCloseModal();
+      } else {
+        console.error("Error updating driver:", response.data.message);
+      }
+    } catch (error) {
+      console.error("Error updating driver:", error);
+    }
   };
 
-  const handleDeleteDriver = () => {
-    const updatedDrivers = drivers.filter((driver) => driver.id !== selectedDriver.id);
-    setDrivers(updatedDrivers);
-    handleCloseModal();
+  const handleDeleteDriver = async () => {
+    try {
+      await axios.delete(`${API_BASE_URL}/driver?driverId=${selectedDriver.driverId}`, getAuthHeaders());
+      getAllDrivers();
+      handleCloseModal();
+    } catch (error) {
+      console.error("Error deleting driver:", error);
+    }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    const newDriverWithId = {
-      ...newDriver,
-      id: drivers.length + 1, // Generate a new ID
-    };
-    setDrivers([...drivers, newDriverWithId]);
-    handleCloseModal();
+    try {
+      await axios.post(`${API_BASE_URL}/driver`, newDriver, getAuthHeaders());
+      getAllDrivers();
+      handleCloseModal();
+    } catch (error) {
+      console.error("Error adding driver:", error);
+    }
   };
+
+  const columns = [
+    { header: "Name", accessor: "name" },
+    { header: "Age", accessor: "age" },
+    { header: "Email", accessor: "email" },
+    { header: "License Number", accessor: "licenseNumber" },
+    { header: "NIC Number", accessor: "nicNumber" },
+    { header: "Phone Number", accessor: "phoneNumber" },
+    { header: "Home Address", accessor: "homeAddress" },
+    { header: "Status", accessor: "status" },
+  ];
 
   return (
     <div>
@@ -176,7 +204,7 @@ const DriversManager = () => {
               <input
                 type="text"
                 name="licenseNumber"
-                placeholder="License Name"
+                placeholder="License Number"
                 className="w-full p-3 border rounded-lg"
                 value={newDriver.licenseNumber}
                 onChange={handleInputChange}
@@ -242,7 +270,6 @@ const DriversManager = () => {
           <div className="bg-white rounded-lg p-8 max-w-md w-full">
             <h2 className="text-2xl font-bold mb-6">Edit Driver</h2>
             <form className="space-y-4" onSubmit={handleUpdateDriver}>
-
               <input
                 type="text"
                 name="name"
@@ -273,7 +300,7 @@ const DriversManager = () => {
               <input
                 type="text"
                 name="licenseNumber"
-                placeholder="License Name"
+                placeholder="License Number"
                 className="w-full p-3 border rounded-lg"
                 value={selectedDriver.licenseNumber}
                 onChange={handleInputChange}
