@@ -1,25 +1,10 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import axios from "axios";
 import Table from "../../components/admin/Table";
 import { Plus } from "lucide-react";
 
 const UserManager = () => {
-  const [users, setUsers] = useState([
-    {
-      id: 1,
-      name: "Alice Johnson",
-      email: "alice@example.com",
-      role: "Customer",
-      status: "Active",
-    },
-    {
-      id: 2,
-      name: "Bob Wilson",
-      email: "bob@example.com",
-      role: "Driver",
-      status: "Inactive",
-    },
-  ]);
-
+  const [users, setUsers] = useState([]);
   const [isAddUserModalOpen, setIsAddUserModalOpen] = useState(false);
   const [isEditUserModalOpen, setIsEditUserModalOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
@@ -30,24 +15,43 @@ const UserManager = () => {
     status: "Active",
   });
 
-  const columns = [
-    {
-      header: "Name",
-      accessor: "name",
-    },
-    {
-      header: "Email",
-      accessor: "email",
-    },
-    {
-      header: "Role",
-      accessor: "role",
-    },
-    {
-      header: "Status",
-      accessor: "status",
-    },
-  ];
+  const API_BASE_URL = "http://localhost:8080/mega_city_cab_war/"; // Replace with your backend URL
+
+  const getAuthHeaders = () => {
+    const token = localStorage.getItem("token"); // Assuming you store the JWT token in localStorage
+    return {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    };
+  };
+
+  const getAllUsers = async () => {
+    console.log("Fetching users...");
+    try {
+      const response = await axios.get(`${API_BASE_URL}/user?action=all`, {
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+        },
+      });
+
+      const responseData = response.data;
+
+      if (responseData.code === 200) {
+        console.log("Users Data:", responseData.data);
+        setUsers(responseData.data);
+      } else {
+        console.error("Error fetching users:", responseData.message);
+      }
+    } catch (error) {
+      console.error("Request failed:", error);
+    }
+  };
+
+  useEffect(() => {
+    getAllUsers();
+  }, []);
 
   const handleAddUser = () => {
     setIsAddUserModalOpen(true);
@@ -85,30 +89,58 @@ const UserManager = () => {
     setIsEditUserModalOpen(true);
   };
 
-  const handleUpdateUser = (e) => {
+  const handleUpdateUser = async (e) => {
     e.preventDefault();
-    const updatedUsers = users.map((user) =>
-      user.id === selectedUser.id ? selectedUser : user
-    );
-    setUsers(updatedUsers);
-    handleCloseModal();
+
+    try {
+      const response = await axios.put(
+        `${API_BASE_URL}user`,
+        {
+          userId: selectedUser.userId,
+          ...selectedUser,
+        },
+        getAuthHeaders()
+      );
+
+      if (response.data.code === 200) {
+        console.log("User updated successfully:", response.data);
+        getAllUsers();
+        handleCloseModal();
+      } else {
+        console.error("Error updating user:", response.data.message);
+      }
+    } catch (error) {
+      console.error("Error updating user:", error);
+    }
   };
 
-  const handleDeleteUser = () => {
-    const updatedUsers = users.filter((user) => user.id !== selectedUser.id);
-    setUsers(updatedUsers);
-    handleCloseModal();
+  const handleDeleteUser = async () => {
+    try {
+      await axios.delete(`${API_BASE_URL}/user?userId=${selectedUser.userId}`, getAuthHeaders());
+      getAllUsers();
+      handleCloseModal();
+    } catch (error) {
+      console.error("Error deleting user:", error);
+    }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    const newUserWithId = {
-      ...newUser,
-      id: users.length + 1, // Generate a new ID
-    };
-    setUsers([...users, newUserWithId]);
-    handleCloseModal();
+    try {
+      await axios.post(`${API_BASE_URL}/user`, newUser, getAuthHeaders());
+      getAllUsers();
+      handleCloseModal();
+    } catch (error) {
+      console.error("Error adding user:", error);
+    }
   };
+
+  const columns = [
+    { header: "Name", accessor: "name" },
+    { header: "Email", accessor: "email" },
+    { header: "Role", accessor: "role" },
+    { header: "Status", accessor: "status" },
+  ];
 
   return (
     <div>

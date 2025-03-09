@@ -12,42 +12,76 @@ export function HeroSection({ onNextClick }) {
   const [date, setDate] = useState("");
   const [time, setTime] = useState("");
   const [hasToken, setHasToken] = useState(false);
-
-  const categories = [
-    {
-      id: "mini",
-      name: "Mini",
-      price: "10/km",
-    },
-    {
-      id: "flex",
-      name: "Flex",
-      price: "12/km",
-    },
-    {
-      id: "car",
-      name: "Car",
-      price: "15/km",
-    },
-    {
-      id: "minivan",
-      name: "Mini Van",
-      price: "18/km",
-    },
-    {
-      id: "premium",
-      name: "Premium",
-      price: "20/km",
-    },
-  ];
+  const [categories, setCategories] = useState([]);
+  const [availableCars, setAvailableCars] = useState([]); // State to store available cars
 
   // Get today's date in YYYY-MM-DD format for the date input min attribute
   const today = new Date().toISOString().split("T")[0];
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
-    setHasToken(!!token); // Set hasToken to true if token exists, false otherwise
+    // Fetch vehicle types from the backend
+    const fetchVehicleTypes = async () => {
+      try {
+        const response = await fetch('http://localhost:8080/mega_city_cab_war/vehicle?action=by-category', {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
+
+        if (!response.ok) {
+          throw new Error('Failed to fetch vehicle types');
+        }
+
+        const data = await response.json();
+        if (data.code === 200) {
+          // Assuming the backend returns an array of vehicle types
+          setCategories(data.data.map(type => ({
+            id: type.toString(),
+            name: `${type}`,
+            price: `${type * 5}/km`, // Example pricing logic
+          })));
+        }
+      } catch (error) {
+        console.error('Error fetching vehicle types:', error);
+      }
+    };
+
+    fetchVehicleTypes();
   }, []);
+
+  // Function to fetch available cars by category
+  const fetchAvailableCars = async (category) => {
+    try {
+        const response = await fetch(
+            `http://localhost:8080/mega_city_cab_war/vehicle?action=by-availability&vehicleType=${encodeURIComponent(category)}`,
+            {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+            }
+        );
+
+        if (!response.ok) {
+            throw new Error("Failed to fetch available cars");
+        }
+
+        const data = await response.json();
+        if (data.code === 200) {
+            setAvailableCars(data.data); // Update the available cars state
+            console.log("data fetched")
+        }
+    } catch (error) {
+        console.error("Error fetching available cars:", error);
+    }
+};
+
+  // Handle category selection
+  const handleCategorySelect = (categoryId) => {
+    setSelectedCategory(categoryId);
+    fetchAvailableCars(categoryId); // Fetch available cars for the selected category
+  };
 
   return (
     <div className="relative w-full min-h-screen pb-12">
@@ -59,9 +93,8 @@ export function HeroSection({ onNextClick }) {
             'url("https://media.istockphoto.com/id/1181382649/photo/colombo-sri-lanka-december-05-2018-view-of-the-colombo-city-skyline-with-modern-architecture.jpg?s=612x612&w=0&k=20&c=XIS9COAwhGXkQYqGKHcabMEpc64B_uwT2utuonAoWl0=")',
         }}
       >
-
-
-      <div className="absolute inset-0 bg-black/50" /></div>
+        <div className="absolute inset-0 bg-black/50" />
+      </div>
       {/* Content */}
       <div className="relative z-10 container mx-auto px-4 pt-20">
         <h1 className="text-4xl md:text-6xl font-bold text-white mb-6">
@@ -79,17 +112,10 @@ export function HeroSection({ onNextClick }) {
               name={category.name}
               price={category.price}
               selected={selectedCategory === category.id}
-              onClick={() => setSelectedCategory(category.id)}
+              onClick={() => handleCategorySelect(category.id)} // Use handleCategorySelect
             />
           ))}
         </div>
-
-          {/* Available Cars */}
-        {/* {selectedCategory && pickup && dropoff && (
-          <div className="mt-8">
-            <AvailableCars category={selectedCategory} />
-          </div>
-        )} */}
 
         {/* Location Selectors and Date/Time Inputs */}
         <div className="bg-white rounded-lg p-6 shadow-lg max-w-full">
@@ -152,18 +178,16 @@ export function HeroSection({ onNextClick }) {
                 Confirm
               </button>
             </div>
-            
           </div>
         </div>
 
-        <MapComponent/>
+        <MapComponent />
 
         {selectedCategory && (
           <div className="mt-8">
-            <AvailableCars category={selectedCategory} />
+            <AvailableCars cars={availableCars} /> {/* Pass available cars to the component */}
           </div>
         )}
-        
       </div>
     </div>
   );
