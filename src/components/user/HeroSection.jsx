@@ -15,13 +15,15 @@ export function HeroSection({ onNextClick }) {
   const [dropoff, setDropoff] = useState("");
   const [date, setDate] = useState("");
   const [time, setTime] = useState("");
-  const [hasToken, setHasToken] = useState(false); // Controls Confirm and Payment buttons
+  const [hasToken, setHasToken] = useState(false);
   const [categories, setCategories] = useState([]);
   const [availableCars, setAvailableCars] = useState([]);
-  const [isModalOpen, setIsModalOpen] = useState(false); // For Payment Modal
-  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false); // For Login Modal
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
+  const [distance, setDistance] = useState(null);
+  const [totalFare, setTotalFare] = useState(null);
   const today = new Date().toISOString().split("T")[0];
-  const navigate =useNavigate();
+  const navigate = useNavigate();
 
   useEffect(() => {
     // Fetch vehicle types from the backend
@@ -54,7 +56,6 @@ export function HeroSection({ onNextClick }) {
     fetchVehicleTypes();
   }, []);
 
-  // Fetch available cars by category
   const fetchAvailableCars = async (category) => {
     try {
       const response = await fetch(
@@ -73,7 +74,7 @@ export function HeroSection({ onNextClick }) {
 
       const data = await response.json();
       if (data.code === 200) {
-        setAvailableCars(data.data); // Update the available cars state
+        setAvailableCars(data.data);
         console.log("data fetched");
       }
     } catch (error) {
@@ -81,48 +82,45 @@ export function HeroSection({ onNextClick }) {
     }
   };
 
-  // Handle category selection
   const handleCategorySelect = (categoryId) => {
     setSelectedCategory(categoryId);
-    fetchAvailableCars(categoryId); // Fetch available cars for the selected category
+    fetchAvailableCars(categoryId);
   };
 
-  // Handle Next button click
   const handleNextClick = () => {
     const role = localStorage.getItem('role');
 
     if (role === 'User') {
-      // Enable Confirm and Payment buttons
       setHasToken(true);
-    }else if(role === 'Admin'){
-      navigate('/admin')
-    } 
-    else {
-      // Disable Confirm and Payment buttons and show login popup
+    } else if (role === 'Admin') {
+      navigate('/admin');
+    } else {
       setHasToken(false);
       setIsLoginModalOpen(true);
       if (onNextClick) {
         onNextClick();
       }
     }
-
-    // Call the original onNextClick function if needed
-    
   };
 
-  // Show Payment Modal
   const showPaymentModal = () => {
     setIsModalOpen(true);
   };
 
-  // Close Payment Modal
   const handlePaymentModalClose = () => {
     setIsModalOpen(false);
   };
 
-  // Close Login Modal
   const handleLoginModalClose = () => {
     setIsLoginModalOpen(false);
+  };
+
+  const calculateFare = (distance) => {
+    if (selectedCategory && distance) {
+      const pricePerKm = parseFloat(categories.find(cat => cat.id === selectedCategory).price.split('/')[0]);
+      const fare = distance * pricePerKm;
+      setTotalFare(fare);
+    }
   };
 
   return (
@@ -238,7 +236,20 @@ export function HeroSection({ onNextClick }) {
         </div>
 
         {/* Map Component */}
-        <MapComponent />
+        <MapComponent 
+          startCity={pickup} 
+          endCity={dropoff} 
+          onDistanceCalculated={setDistance} 
+          onFareCalculated={calculateFare} 
+        />
+
+        {/* Display Distance and Fare */}
+        {distance && (
+          <div className="mt-4 text-white">
+            <p>Distance: {distance.toFixed(2)} km</p>
+            {totalFare && <p>Total Fare: Rs. {totalFare.toFixed(2)}</p>}
+          </div>
+        )}
 
         {/* Available Cars */}
         {selectedCategory && (
@@ -261,7 +272,6 @@ export function HeroSection({ onNextClick }) {
         onCancel={handleLoginModalClose}
       >
         <p>You need to log in as a user to proceed with the payment.</p>
-        {/* Add your login form or redirect logic here */}
       </Modal>
     </div>
   );

@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { MapContainer, TileLayer, Marker, Popup, Polyline } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
-import axios from 'axios'; 
+import axios from 'axios';
 
 // Fix default marker icon
 delete L.Icon.Default.prototype._getIconUrl;
@@ -12,14 +12,18 @@ L.Icon.Default.mergeOptions({
     shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
 });
 
-export function MapComponent() {
-    const [startCity, setStartCity] = useState('');
-    const [endCity, setEndCity] = useState('');
+export function MapComponent({ startCity, endCity, onDistanceCalculated, onFareCalculated }) {
     const [startCoords, setStartCoords] = useState(null);
     const [endCoords, setEndCoords] = useState(null);
     const [routeCoords, setRouteCoords] = useState([]);
     const [distance, setDistance] = useState(null);
-    const [error, setError] = useState(null); 
+    const [error, setError] = useState(null);
+
+    useEffect(() => {
+        if (startCity && endCity) {
+            getDistance();
+        }
+    }, [startCity, endCity]);
 
     const fetchCoordinates = async (city) => {
         try {
@@ -62,18 +66,14 @@ export function MapComponent() {
             const response = await axios.get('https://api.openrouteservice.org/v2/directions/driving-car', {
                 params: {
                     api_key: '5b3ce3597851110001cf6248d0e7229566e8452486b6757bc3e74be5',
-                    start: `${start.lng},${start.lat}`, 
-                    end: `${end.lng},${end.lat}`, 
+                    start: `${start.lng},${start.lat}`,
+                    end: `${end.lng},${end.lat}`,
                 },
             });
 
             const distanceInKm = response.data.features[0].properties.segments[0].distance / 1000;
             setDistance(distanceInKm);
-            setTotal(distanceInKm * 100); 
-
-            const durationInSec = response.data.features[0].properties.segments[0].duration;
-            const durationInHours = (durationInSec / 3600).toFixed(2); 
-            setHours(durationInHours);
+            onDistanceCalculated(distanceInKm);
 
             const route = response.data.features[0].geometry.coordinates.map(([lng, lat]) => ({
                 lat,
@@ -88,24 +88,7 @@ export function MapComponent() {
 
     return (
         <div>
-            <input
-                type="text"
-                placeholder="Start City"
-                value={startCity}
-                onChange={(e) => setStartCity(e.target.value)}
-            />
-            <input
-                type="text"
-                placeholder="End City"
-                value={endCity}
-                onChange={(e) => setEndCity(e.target.value)}
-            />
-            <button onClick={getDistance}>Calculate Route</button>
-
             {error && <p style={{ color: 'red' }}>{error}</p>}
-            {/* {distance && <p>Distance: {distance} km</p>} */}
-            {/* {hours && <p>Estimated Time: {hours} hours</p>} */}
-            {/* {total && <p>Total Fare: Rs. {total}</p>} */}
 
             <MapContainer center={[7.8731, 80.7718]} zoom={7} style={{ height: '500px', width: '100%' }}>
                 <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
