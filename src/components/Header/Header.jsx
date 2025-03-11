@@ -1,12 +1,15 @@
 import { useState } from 'react';
 import { FaUserCircle } from 'react-icons/fa';
 import { AuthModal } from '../../components/user/AuthModal'; // Import the AuthModal component
+import { useNavigate } from "react-router-dom";
 
 export default function Header() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [username, setUsername] = useState('');
   const [showAuthModal, setShowAuthModal] = useState(false); // State to control AuthModal visibility
   const [isLogin, setIsLogin] = useState(true); // State to toggle between login and register forms
+
+  const navigate =useNavigate();
 
   const handleLoginSuccess = (userData) => {
     setIsLoggedIn(true);
@@ -21,6 +24,16 @@ export default function Header() {
     localStorage.removeItem('email'); // Clear the email from localStorage
     localStorage.removeItem('role'); // Clear the role from localStorage
   };
+
+  const checkToken = () => {
+    if(localStorage.getItem('role')=='Admin'){
+      navigate('/admin')
+    } else if(localStorage.getItem('role')=='User'){
+      navigate('/')
+    } else {
+      setShowAuthModal(true)
+    }
+  }
 
   return (
     <header className="w-full bg-yellow-500 text-gray-900 p-4 shadow-lg">
@@ -43,11 +56,11 @@ export default function Header() {
                 Contact
               </a>
             </li>
-            <li>
+            {/* <li>
               <a href="/admin" className="hover:underline">
                 Admin Dashboard
               </a>
-            </li>
+            </li> */}
             <li>
               {isLoggedIn ? (
                 <div className="flex items-center space-x-2">
@@ -62,7 +75,8 @@ export default function Header() {
                 </div>
               ) : (
                 <button
-                  onClick={() => setShowAuthModal(true)}
+                  // onClick={() => setShowAuthModal(true)}
+                  onClick={checkToken}
                   className="bg-gray-900 hover:bg-gray-700 text-yellow-500 font-bold py-2 px-4 rounded"
                 >
                   Login

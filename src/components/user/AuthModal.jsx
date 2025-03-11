@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 export function AuthModal({ isOpen, onClose, isLogin, setIsLogin, onLoginSuccess }) {
   const [formData, setFormData] = useState({
@@ -6,6 +7,7 @@ export function AuthModal({ isOpen, onClose, isLogin, setIsLogin, onLoginSuccess
     password: "",
     name: "",
   });
+  const navigate =useNavigate();
 
   if (!isOpen) return null;
 
@@ -38,6 +40,9 @@ export function AuthModal({ isOpen, onClose, isLogin, setIsLogin, onLoginSuccess
         localStorage.setItem("email", data.data.name);
         localStorage.setItem("role", data.data.role);
         alert("Login successful!");
+        if(data.data.role=='Admin'){
+          navigate('/admin')
+        }
         //onLoginSuccess({ name: data.data.name }); // Notify parent component of successful login
         onClose(); // Close the modal after successful login
       } else {

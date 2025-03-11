@@ -1,10 +1,14 @@
 import React from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Users, Car, Calendar, LogOut, User } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+
 
 
 const Layout = ({ children }) => {
   const location = useLocation();
+  const navigate =useNavigate();
+
 
   const isActive = (path) => {
     return (
@@ -12,6 +16,14 @@ const Layout = ({ children }) => {
       (location.pathname === "/" && path === "/drivers")
     );
   };
+
+  const logOut = () => {
+    localStorage.removeItem('token'); // Clear the token from localStorage
+    localStorage.removeItem('email'); // Clear the email from localStorage
+    localStorage.removeItem('role'); // Clear the role from localStorage
+    
+    navigate('/')
+  }
 
   return (
     <div className="flex h-screen bg-gray-100">
@@ -59,7 +71,7 @@ const Layout = ({ children }) => {
           </Link>
         </nav>
         <div className="absolute bottom-0 w-64 p-4">
-          <button className="flex items-center px-4 py-3 text-gray-300 hover:bg-gray-800 w-full">
+          <button className="flex items-center px-4 py-3 text-gray-300 hover:bg-gray-800 w-full" onClick={logOut}>
             <LogOut className="w-5 h-5 mr-3" />
             Logout
           </button>

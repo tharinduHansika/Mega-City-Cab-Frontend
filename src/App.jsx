@@ -8,6 +8,8 @@ import Footer from './components/Footer/Footer'
 import { HeroSection } from './components/user/HeroSection'
 import { AuthModal } from './components/user/AuthModal'
 import AdminDashboard from './pages/AdminDashboard';
+import 'antd/dist/reset.css'; 
+
 
 function App() {
   const [selectedCategory, setSelectedCategory] = useState(null);

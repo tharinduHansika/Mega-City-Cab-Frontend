@@ -103,9 +103,9 @@ export function MapComponent() {
             <button onClick={getDistance}>Calculate Route</button>
 
             {error && <p style={{ color: 'red' }}>{error}</p>}
-            {distance && <p>Distance: {distance} km</p>}
-            {hours && <p>Estimated Time: {hours} hours</p>} 
-            {total && <p>Total Fare: Rs. {total}</p>}
+            {/* {distance && <p>Distance: {distance} km</p>} */}
+            {/* {hours && <p>Estimated Time: {hours} hours</p>} */}
+            {/* {total && <p>Total Fare: Rs. {total}</p>} */}
 
             <MapContainer center={[7.8731, 80.7718]} zoom={7} style={{ height: '500px', width: '100%' }}>
                 <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
