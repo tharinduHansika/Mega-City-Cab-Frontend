@@ -45,36 +45,37 @@ export function HeroSection({ onNextClick }) {
     };
   
 
-  useEffect(() => {
-    // Fetch vehicle types from the backend
-    const fetchVehicleTypes = async () => {
-      try {
-        const response = await fetch('http://localhost:8080/mega_city_cab_war/vehicle?action=by-category', {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        });
+useEffect(() => {
+  // Fetch vehicle types from the backend
+  const fetchVehicleTypes = async () => {
+    try {
+      const response = await fetch('http://localhost:8080/mega_city_cab_war/vehicle?action=by-category', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
 
-        if (!response.ok) {
-          throw new Error('Failed to fetch vehicle types');
-        }
-
-        const data = await response.json();
-        if (data.code === 200) {
-          setCategories(data.data.map(type => ({
-            id: type.toString(),
-            name: `${type}`,
-            price: `${type * 5}/km`, // Example pricing logic
-          })));
-        }
-      } catch (error) {
-        console.error('Error fetching vehicle types:', error);
+      if (!response.ok) {
+        throw new Error('Failed to fetch vehicle types');
       }
-    };
 
-    fetchVehicleTypes();
-  }, []);
+      const data = await response.json();
+      if (data.code === 200) {
+        // Map the response data to include vehicleType and pricePerKm
+        setCategories(data.data.map(type => ({
+          id: type.vehicleType, // Use vehicleType as the ID
+          name: type.vehicleType, // Use vehicleType as the name
+          price: `${type.pricePerKm}/km`, // Use pricePerKm for the price
+        })));
+      }
+    } catch (error) {
+      console.error('Error fetching vehicle types:', error);
+    }
+  };
+
+  fetchVehicleTypes();
+}, []);
 
   const fetchAvailableCars = async (category) => {
     try {
@@ -141,6 +142,7 @@ export function HeroSection({ onNextClick }) {
             console.log("Message:", data.message); // Print the message from the response
             console.log("Code:", data.code); // Print the code from the response
             console.log("Driver ID:", data.driverId); // Print the driver ID from the response
+            localStorage.setItem('bookingId',data.bookingId)
             savePayment(data.bookingId, data.userEmail, data.vehicleId, data.amount, data.bookingDate, data.bookingTime);
         } else {
             console.error("Failed to save booking:", data.message);

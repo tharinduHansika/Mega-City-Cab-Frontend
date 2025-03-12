@@ -1,8 +1,10 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { jsPDF } from 'jspdf';
 import html2canvas from 'html2canvas';
 
 const Receipt = () => {
+  const [bookingData, setBookingData] = useState(null); // State to store booking data
+
   const handleDownload = () => {
     const input = document.getElementById('receipt');
     html2canvas(input).then((canvas) => {
@@ -13,21 +15,64 @@ const Receipt = () => {
     });
   };
 
+  const getBooking = async (bookingId) => {
+    try {
+      const response = await fetch(
+        `http://localhost:8080/mega_city_cab_war/booking?action=by-id&bookingId=${bookingId}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+          credentials: "include", // Ensure cookies/tokens are handled
+        }
+      );
+
+      const data = await response.json();
+
+      if (response.ok) {
+        console.log("Booking data:", data.data);
+        setBookingData(data.data[0]); // Set the booking data in state
+      } else {
+        console.error("Failed to fetch booking:", data.message);
+      }
+    } catch (error) {
+      console.error("Error fetching booking:", error);
+    }
+  };
+
+  useEffect(() => {
+    const bookingId = localStorage.getItem("bookingId");
+    if (bookingId) {
+      getBooking(bookingId);
+    } else {
+      console.error("No bookingId found in localStorage");
+    }
+  }, []);
+
   return (
     <div>
       <div id="receipt" style={styles.receipt}>
         <h1 style={styles.title}>MegacityCab</h1>
         <h2 style={styles.subtitle}>Contact Us</h2>
         <div style={styles.details}>
-          <p><strong>Booking ID:</strong> 123456</p>
-          <p><strong>Payment ID:</strong> 654321</p>
-          <p><strong>Customer ID:</strong> CUST001</p>
-          <p><strong>Driver ID:</strong> DRIVER001</p>
-          <p><strong>Start Location:</strong> Central Park</p>
-          <p><strong>Drop Location:</strong> Times Square</p>
-          <p><strong>Total KM:</strong> 10 km</p>
-          <p><strong>Date:</strong> 2023-10-01</p>
-          <p><strong>Time:</strong> 10:00 AM</p>
+          {bookingData ? ( // Check if bookingData is available
+            <>
+              <p><strong>Booking ID:</strong> {bookingData.bookingId}</p>
+              <p><strong>Customer Email:</strong> {bookingData.userEmail}</p>
+              <p><strong>Driver ID:</strong> {bookingData.driverId}</p>
+              <p><strong>Start Location:</strong> {bookingData.pickupLocation}</p>
+              <p><strong>Drop Location:</strong> {bookingData.dropLocation}</p>
+              <p><strong>Total KM:</strong> {bookingData.totalKm} km</p>
+              <p><strong>Date:</strong> {bookingData.bookingDate}</p>
+              <p><strong>Time:</strong> {bookingData.bookingTime}</p>
+              <p><strong>Amount:</strong> ${bookingData.amount}</p>
+              <p><strong>Status:</strong> {bookingData.status}</p>
+            </>
+          ) : (
+            <p>Loading booking details...</p> // Show a loading message while data is being fetched
+          )}
         </div>
       </div>
       <button onClick={handleDownload} style={styles.button}>Download Receipt</button>
