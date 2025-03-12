@@ -37,7 +37,8 @@ export function AuthModal({ isOpen, onClose, isLogin, setIsLogin, onLoginSuccess
       if (response.ok) {
         console.log("Login successful:", data);
         localStorage.setItem("token", data.data.jwt);
-        localStorage.setItem("email", data.data.name);
+        localStorage.setItem("name", data.data.name);
+        localStorage.setItem("email", data.data.email);
         localStorage.setItem("role", data.data.role);
         alert("Login successful!");
         if(data.data.role=='Admin'){

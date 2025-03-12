@@ -110,7 +110,7 @@ export function HeroSection({ onNextClick }) {
       dropLocation: dropoff,
       pickupLocation: pickup,
       totalKm: distance*100, // Use the calculated distance
-      customerId: 5,
+      userEmail : localStorage.getItem('email'),
       driverId: 1,
       vehicleId: 2,
       status: "pending",
