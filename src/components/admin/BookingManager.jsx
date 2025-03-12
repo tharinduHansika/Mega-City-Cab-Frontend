@@ -18,7 +18,7 @@ const BookingsManager = () => {
     userEmail: "",
     driverId: "",
     vehicleId: "",
-    status: "Pending",
+    status: "pending",
   });
 
   const API_BASE_URL = "http://localhost:8080/mega_city_cab_war/"; // Replace with your backend URL
@@ -77,7 +77,7 @@ const BookingsManager = () => {
       userEmail: "",
       driverId: "",
       vehicleId: "",
-      status: "Pending",
+      status: "pending",
     });
   };
 
@@ -97,8 +97,13 @@ const BookingsManager = () => {
   };
 
   const handleRowClick = (booking) => {
-    setSelectedBooking(booking);
-    setIsEditBookingModalOpen(true);
+    // Only open the modal if the booking status is "Pending"
+    if (booking.status === "pending") {
+      setSelectedBooking(booking);
+      setIsEditBookingModalOpen(true);
+    } else {
+      alert("Only bookings with 'pending' status can be edited.");
+    }
   };
 
   const handleUpdateBooking = async (e) => {
@@ -161,6 +166,51 @@ const BookingsManager = () => {
     { header: "Status", accessor: "status" },
   ];
 
+  const updateBooking = async (event) => {
+    event.preventDefault();
+    const bookingReq = {
+      bookingId: selectedBooking.bookingId,
+      amount: selectedBooking.amount,
+      bookingDate: selectedBooking.bookingDate,
+      bookingTime: selectedBooking.bookingTime,
+      dropLocation: selectedBooking.dropLocation,
+      pickupLocation: selectedBooking.pickupLocation,
+      totalKm: selectedBooking.totalKm,
+      userEmail: selectedBooking.userEmail,
+      driverId: selectedBooking.driverId,
+      vehicleId: selectedBooking.vehicleId,
+      status: "completed",
+    };
+    console.log('bookingReq', bookingReq);
+  
+    try {
+      const response = await fetch(
+        "http://localhost:8080/mega_city_cab_war/booking",
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
+          },
+          body: JSON.stringify(bookingReq),
+          credentials: "include",
+        }
+      );
+  
+      const data = await response.json();
+      console.log('Response data:', data); // Log the response data
+  
+      if (response.ok) {
+        alert('Booking updated successfully');
+      } else {
+        alert('Failed to update booking: ' + data.message); // Show error message from backend
+      }
+    } catch (error) {
+      console.error("Error updating booking:", error);
+      alert('An error occurred while updating the booking');
+    }
+  };
+
   return (
     <div>
       <div className="flex justify-between items-center mb-6">
@@ -173,7 +223,11 @@ const BookingsManager = () => {
           Add Booking
         </button>
       </div>
-      <Table columns={columns} data={bookings} onRowClick={handleRowClick} />
+
+      {/* Table Container with Scrollbar */}
+      <div style={{ maxHeight: "500px", overflowY: "auto" }}>
+        <Table columns={columns} data={bookings} onRowClick={handleRowClick} />
+      </div>
 
       {/* Add Booking Modal */}
       {isAddBookingModalOpen && (
@@ -269,7 +323,7 @@ const BookingsManager = () => {
                 onChange={handleInputChange}
                 required
               >
-                <option value="Pending">Pending</option>
+                <option value="pending">pending</option>
                 <option value="Approved">Approved</option>
                 <option value="Declined">Declined</option>
               </select>
@@ -385,7 +439,7 @@ const BookingsManager = () => {
                 onChange={handleInputChange}
                 required
               >
-                <option value="Pending">Pending</option>
+                <option value="pending">pending</option>
                 <option value="Approved">Approved</option>
                 <option value="Declined">Declined</option>
               </select>
@@ -393,6 +447,7 @@ const BookingsManager = () => {
                 <button
                   type="submit"
                   className="w-full bg-green-600 text-white py-3 rounded-lg font-semibold hover:bg-green-700"
+                  onClick={updateBooking}
                 >
                   Update Booking
                 </button>
@@ -406,7 +461,7 @@ const BookingsManager = () => {
               </div>
             </form>
             <button
-              className="absolute top-4 right-4 text-gray-500 hover:text-gray-700"
+              className="absolute top-4 right-4 text-white hover:text-gray-700"
               onClick={handleCloseModal}
             >
               ✕
