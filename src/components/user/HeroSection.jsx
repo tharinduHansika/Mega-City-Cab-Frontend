@@ -180,6 +180,7 @@ export function HeroSection({ onNextClick }) {
         if (response.ok) {
           alert('save booking and payment')
           navigate('/recepit')
+          navigate('/recepit')
         }
       }catch(error){
         console.error("booking ", error);
