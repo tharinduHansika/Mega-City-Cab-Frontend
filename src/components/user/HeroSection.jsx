@@ -24,6 +24,7 @@ export function HeroSection({ onNextClick }) {
   const today = new Date().toISOString().split("T")[0];
   const navigate = useNavigate();
   const [selectedVehicleId, setSelectedVehicleId] = useState(null);
+  const [isFormValid, setIsFormValid] = useState(false);
 
   const [cardNumber, setCardNumber] = useState('');
     const [cardHolder, setCardHolder] = useState('');
@@ -178,6 +179,7 @@ export function HeroSection({ onNextClick }) {
         const data = await response.json();
         if (response.ok) {
           alert('save booking and payment')
+          navigate('/recepit')
         }
       }catch(error){
         console.error("booking ", error);

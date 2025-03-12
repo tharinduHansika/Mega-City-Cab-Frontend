@@ -9,6 +9,7 @@ import { HeroSection } from './components/user/HeroSection'
 import { AuthModal } from './components/user/AuthModal'
 import AdminDashboard from './pages/AdminDashboard';
 import 'antd/dist/reset.css'; 
+import Receipt from './components/user/Receipt';
 
 
 function App() {
@@ -34,6 +35,7 @@ function App() {
       <Routes>
           <Route path="/" element={<HeroSection onNextClick={handleHeroSectionNextClick} />} />
           <Route path="/admin/*" element={<AdminDashboard/>} />
+          <Route path="/recepit" element={<Receipt/>}/>
       </Routes>
       
       {/* Conditionally render Footer based on the route */}
