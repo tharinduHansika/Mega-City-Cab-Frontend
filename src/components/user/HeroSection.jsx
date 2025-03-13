@@ -7,6 +7,7 @@ import { MapComponent } from "./MapComponent";
 import { Button, Modal } from 'antd';
 import { useNavigate } from "react-router-dom";
 import './CardPayment.css'; // Import the CSS file for styling
+import AboutUs from "./AboutUs";
  
 export function HeroSection({ onNextClick }) {
   const [selectedCategory, setSelectedCategory] = useState("");
@@ -422,6 +423,7 @@ useEffect(() => {
       </form>
     </div>
       </Modal>
+     
 
       {/* Login Modal */}
       <Modal

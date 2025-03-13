@@ -10,7 +10,8 @@ import { AuthModal } from './components/user/AuthModal'
 import AdminDashboard from './pages/AdminDashboard';
 import 'antd/dist/reset.css'; 
 import Receipt from './components/user/Receipt';
-
+import AboutUs from './components/user/AboutUs';
+import ContactUs from './components/user/ContactUs';
 
 function App() {
   const [selectedCategory, setSelectedCategory] = useState(null);
@@ -36,8 +37,12 @@ function App() {
           <Route path="/" element={<HeroSection onNextClick={handleHeroSectionNextClick} />} />
           <Route path="/admin/*" element={<AdminDashboard/>} />
           <Route path="/recepit" element={<Receipt/>}/>
+          <Route path="/contactUs" element={ <ContactUs/>}/>
+          <Route path="/aboutUs" element={<AboutUs/>}/>
+
       </Routes>
-      
+   
+ 
       {/* Conditionally render Footer based on the route */}
       {location.pathname === '/' && <Footer />}
 
@@ -47,6 +52,7 @@ function App() {
         isLogin={isLogin}
         setIsLogin={setIsLogin}
       />
+
     </div>
   );
 }

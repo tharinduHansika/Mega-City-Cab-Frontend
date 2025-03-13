@@ -47,12 +47,12 @@ export default function Header() {
               </a>
             </li>
             <li>
-              <a href="#" className="hover:underline">
+              <a href="/aboutUs" className="hover:underline">
                 About
               </a>
             </li>
             <li>
-              <a href="#" className="hover:underline">
+              <a href="/contactUs" className="hover:underline">
                 Contact
               </a>
             </li>
