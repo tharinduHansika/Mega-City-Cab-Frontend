@@ -193,7 +193,7 @@ const handleUpdateVehicle = async (e) => {
                 onChange={handleInputChange}
                 required
               />
-              <input
+              {/* <input
                 type="text"
                 name="vehicleType"
                 placeholder="Vehicle Type"
@@ -201,7 +201,21 @@ const handleUpdateVehicle = async (e) => {
                 value={newVehicle.vehicleType}
                 onChange={handleInputChange}
                 required
-              />
+              /> */}
+              <select
+                name="vehicleType"
+                className="w-full p-3 border rounded-lg"
+                value={newVehicle.vehicleType}
+                onChange={handleInputChange}
+                required
+              >
+                <option value="">Select Vehicle Type</option>
+                <option value="mini">Mini</option>
+                <option value="flex">Flex</option>
+                <option value="car">Car</option>
+                <option value="mini van">Mini Van</option>
+                <option value="van">Van</option>
+              </select>
               <input
                 type="text"
                 name="passengerCount"
@@ -245,9 +259,8 @@ const handleUpdateVehicle = async (e) => {
                 onChange={handleInputChange}
                 required
               >
-                <option value="Available">Available</option>
-                <option value="In Use">In Use</option>
-                <option value="Under Maintenance">Under Maintenance</option>
+                <option value="available">Available</option>
+                <option value="busy">Busy</option>
               </select>
               <button
                 type="submit"
@@ -281,7 +294,7 @@ const handleUpdateVehicle = async (e) => {
                 onChange={handleInputChange}
                 required
               />
-              <input
+              {/* <input
                 type="text"
                 name="vehicleType"
                 placeholder="Vehicle Type"
@@ -289,7 +302,21 @@ const handleUpdateVehicle = async (e) => {
                 value={selectedVehicle.vehicleType}
                 onChange={handleInputChange}
                 required
-              />
+              /> */}
+              <select
+                name="vehicleType"
+                className="w-full p-3 border rounded-lg"
+                value={selectedVehicle.vehicleType}
+                onChange={handleInputChange}
+                required
+              >
+                <option value="">Select Vehicle Type</option>
+                <option value="mini">Mini</option>
+                <option value="flex">Flex</option>
+                <option value="car">Car</option>
+                <option value="mini van">Mini Van</option>
+                <option value="van">Van</option>
+              </select>
               <input
                 type="text"
                 name="passengerCount"
@@ -354,7 +381,7 @@ const handleUpdateVehicle = async (e) => {
               </div>
             </form>
             <button
-              className="absolute top-4 right-4 text-gray-500 hover:text-gray-700"
+              className="absolute top-4 right-4 text-white hover:text-gray-700"
               onClick={handleCloseModal}
             >
               ✕
