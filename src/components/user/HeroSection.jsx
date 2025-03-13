@@ -243,7 +243,7 @@ useEffect(() => {
         className="absolute inset-0 bg-cover bg-center bg-no-repeat"
         style={{
           backgroundImage:
-            'url("https://media.istockphoto.com/id/1181382649/photo/colombo-sri-lanka-december-05-2018-view-of-the-colombo-city-skyline-with-modern-architecture.jpg?s=612x612&w=0&k=20&c=XIS9COAwhGXkQYqGKHcabMEpc64B_uwT2utuonAoWl0=")',
+            'url("https://cdn.wallpapersafari.com/43/45/2P9OZs.jpg")',
         }}
       >
         <div className="absolute inset-0 bg-black/50" />
